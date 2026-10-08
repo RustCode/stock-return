@@ -49,7 +49,11 @@ button{font:inherit;cursor:pointer;border-radius:7px}
 .status{font-size:.88rem;padding:9px 12px;border-radius:7px;background:var(--warn-bg);color:var(--warn-fg)}
 .head{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:flex-end;justify-content:space-between}
 .name{font-size:1.05rem;font-weight:700}
-.name small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+.name > small{display:block;font-weight:400;color:var(--muted);font-size:.82rem;margin-top:4px}
+.name-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.last{display:inline-flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.last b{font-size:2rem;font-weight:600;line-height:1.1}
+.last small{font-size:.8rem;font-weight:500}
 .big{font-size:2.6rem;font-weight:600;line-height:1}
 .big-label{font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-align:right}
 .tag{display:inline-block;font-size:.72rem;padding:1px 7px;border-radius:99px;border:1px solid var(--warn-fg);color:var(--warn-fg);margin-left:6px;vertical-align:middle}
@@ -254,7 +258,14 @@ function show(d){
   let peak = -Infinity, mdd = 0, hi = r[0], lo = r[0];
   r.forEach(x => { peak = Math.max(peak, x.c); mdd = Math.min(mdd, x.c/peak - 1); if (x.c > hi.c) hi = x; if (x.c < lo.c) lo = x; });
   $("name").innerHTML = "";
-  const nm = document.createElement("div"); nm.textContent = d.name;
+  const nm = document.createElement("div"); nm.className = "name-row";
+  const nt = document.createElement("span"); nt.textContent = d.name;
+  const prev = r.length > 1 ? r[r.length-2].c : l.c, dc = l.c - prev, dp = prev ? dc/prev : 0;
+  const px = document.createElement("span"); px.className = "last num " + cls(dc);
+  const pv = document.createElement("b"); pv.textContent = fmtN(l.c);
+  const pu = document.createElement("small");
+  pu.textContent = `${dc > 0 ? "▲" : dc < 0 ? "▼" : ""} ${dc > 0 ? "+" : ""}${fmtN(dc)}（${fmtP(dp)}）　${l.d} 收盤${d.cur ? " " + d.cur : ""}`;
+  px.append(pv, pu); nm.append(nt, px);
   const sm = document.createElement("small"); sm.className = "num"; sm.textContent = `${d.sym}　${f.d} → ${l.d}${d.cur ? "　" + d.cur : ""}`;
   $("name").append(nm, sm);
   $("big").textContent = fmtP(pr); $("big").className = "big num " + cls(pr);
